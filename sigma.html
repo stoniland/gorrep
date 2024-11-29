@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFlow | Modern Learning Platform</title>
+    <link hrzef="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Core Variables */
+        :root {
+         --accent-2: #fb923c;
+            --accent-3: #facc15;
+            --bg-light: #f8fafc;
+            --bg-dark: #0f172a;
+            --text-light: #f1f5f9;
+            --text-dark: #1e293b;
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-full: 9999px;
+            --z-modal: 1000;
+            --z-popup: 900;
+            --z-header: 800;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-primary: var(--bg-dark);
+            --bg-secondary: #1e293b;
+            --text-primary: var(--text-light);
+            --text-secondary: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-primary: var(--bg-light);
+            --bg-secondary: #ffffff;
+            --text-primary: var(--text-dark);
+            --text-secondary: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 16px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color var(--transition-normal);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .main-content {
+            margin-top: 5rem;
+            padding: 2rem 0;
+        }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: var(--z-modal);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Popup System */
+        .popup {
+            position: fixed;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            z-index: var(--z-popup);
+            display: none;
+            animation: popupFadeIn 0.2s ease;
+        }
+
+        .popup.top-right {
+            top: 5rem;
+            right: 1rem;
+        }
+
+        .popup.bottom-right {
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        /* Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-sm);
+            z-index: var(--z-header);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            height: 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .nav-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            border: none;
+            outline: none;
+            font-size: 0.875rem;
+            text-decoration: none;
+            background: none;
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: var(--radius-full);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-dark);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all var(--transition-fast);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Grid System */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (max-width: 1024px) {
+            .grid-cols-4 { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .grid-cols-3, .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr; }
+        }
+
+        /* Lists */
+        .list {
+            list-style: none;
+        }
+
+        .list-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition-fast);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25em 0.75em;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-primary {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .badge-secondary {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        /* Animations */
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes popupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Utilities */
+        .hidden { display: none; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .p-4 { padding: 1rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .font-bold { font-weight: 700; }
+        .text-primary { color: var(--primary); }
+        .text-secondary { color: var(--secondary); }
+        .bg-primary { background: var(--primary); }
+        .bg-secondary { background: var(--secondary); }
+    </style>
+</head>
+<body data-theme="light">
+    <!-- Header -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="#" class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                EduFlow
+            </a>
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active">Dashboard</a>
+                <a href="#courses" class="nav-item">Courses</a>
+                <a href="#schedule" class="nav-item">Schedule</a>
+                <a href="#assignments" class="nav-item">Assignments</a>
+                <a href="#messages" class="nav-item">Messages</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <button class="btn btn-icon" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn btn-icon" onclick="showNotifications()" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge badge-primary">3</span>
+                </button>
+                <button class="btn btn-icon" onclick="showProfile()" title="Profile">
+                    <img src="https://ui-avatars.com/api/?name=John+Doe" 
+                        alt="Profile" 
+                         style="width: 32px; height: 32px; border-radius: 50%;">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Quick Actions -->
+            <div class="flex items-center justify-between mb-4">
+                <h1>Welcome back, John!</h1>
+                <div class="flex gap-2">
+                    <button class="btn btn-primary" onclick="startStudying()">
+                        <i class="fas fa-play"></i>
+                        Start Studying
+                    </button>
+                    <button class="btn btn-outline" onclick="showCalendar()">
+                        <i class="fas fa-calendar"></i>
+                        Calendar
+                    </button>
+                    <button class="btn btn-outline" onclick="showTasks()">
+                        <i class="fas fa-tasks"></i>
+                        Tasks
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Your Progress</h2>
+                    <button class="btn btn-outline" onclick="showDetailedProgress()">
+                        View Details
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="progress-item">
+                            <h3>Overall Progress</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                            <p class="text-sm text-secondary">75% Complete</p>
+                        </div>
+                        <div class="progress-item">
+                            <h3>Active Courses</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            <p class="text-sm text-secondary">3 of 5 Completed</p>
+                        </div>
+                        <div class="progress-item">
+                            <h3>Assignments</h3>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%"></div>
+                            </div>
+                            <p class="text-sm text-secondary">9 of 10 Submitted</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Active Courses -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Active Courses</h2>
+                        <button class="btn btn-outline" onclick="showAllCourses()">
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="list" id="active-courses-list">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Deadlines -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Upcoming Deadlines</h2>
+                        <button class="btn btn-outline" onclick="showAllDeadlines()">
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="list" id="deadlines-list">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Activities</h2>
+                        <button class="btn btn-outline" onclick="showAllActivities()">
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="list" id="activities-list">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Today's Schedule</h2>
+                        <button class="btn btn-outline" onclick="showFullSchedule()">
+                            Full Schedule
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="list" id="schedule-list">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <button class="btn btn-icon" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Popups -->
+    <div class="popup top-right" id="notification-popup">
+        <div class="popup-header">
+            <h3>Notifications</h3>
+            <button class="btn btn-icon" onclick="closePopup('notification-popup')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="popup-body" id="notifications-list">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <div class="popup bottom-right" id="quick-actions-popup">
+        <div class="popup-header">
+            <h3>Quick Actions</h3>
+            <button class="btn btn-icon" onclick="closePopup('quick-actions-popup')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="popup-body">
+            <div class="list">
+                <button class="btn btn-outline w-full mb-2" onclick="startNewCourse()">
+                    <i class="fas fa-plus"></i> Start New Course
+                </button>
+                <button class="btn btn-outline w-full mb-2" onclick="createAssignment()">
+                    <i class="fas fa-tasks"></i> Create Assignment
+                </button>
+                <button class="btn btn-outline w-full" onclick="scheduleEvent()">
+                    <i class="fas fa-calendar-plus"></i> Schedule Event
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Application State
+        const state = {
+            currentUser: {
+                id: 1,
+                name: 'John Doe',
+                email: 'john@eduflow.com',
+                avatar: 'https://ui-avatars.com/api/?name=John+Doe',
+                role: 'student'
+            },
+            courses: [
+                {
+                    id: 1,
+                    title: 'Advanced Mathematics',
+                    instructor: 'Dr. Sarah Johnson',
+                    progress: 75,
+                    lastAccessed: '2024-11-19'
+                },
+                {
+                    id: 2,
+                    title: 'Physics 101',
+                    instructor: 'Prof. Michael Chen',
+                    progress: 60,
+                    lastAccessed: '2024-11-18'
+                },
+                {
+                    id: 3,
+                    title: 'Web Development',
+                    instructor: 'Jane Smith',
+                    progress: 90,
+                    lastAccessed: '2024-11-19'
+                }
+            ],
+            assignments: [
+                {
+                    id: 1,
+                    title: 'Math Assignment 3',
+                    course: 'Advanced Mathematics',
+                    dueDate: '2024-11-25',
+                    status: 'pending'
+                },
+                {
+                    id: 2,
+                    title: 'Physics Lab Report',
+                    course: 'Physics 101',
+                    dueDate: '2024-11-23',
+                    status: 'in-progress'
+                }
+            ],
+            schedule: [
+                {
+                    id: 1,
+                    title: 'Math Lecture',
+                    time: '09:00 AM',
+                    duration: '1h 30m',
+                    type: 'lecture'
+                },
+                {
+                    id: 2,
+                    title: 'Physics Lab',
+                    time: '11:00 AM',
+                    duration: '2h',
+                    type: 'lab'
+                }
+            ],
+            notifications: [
+                {
+                    id: 1,
+                    type: 'assignment',
+                    title: 'New Assignment Posted',
+                    message: 'Math Assignment 4 has been posted',
+                    time: '5 minutes ago'
+                },
+                {
+                    id: 2,
+                    type: 'course',
+                    title: 'Course Update',
+                    message: 'New materials available in Physics 101',
+                    time: '1 hour ago'
+                }
+            ]
+        };
+
+        // UI Functions
+        function showModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+        function showPopup(popupId) {
+            document.getElementById(popupId).style.display = 'block';
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Course Functions
+        function showAllCourses() {
+            const content = `
+                <div class="grid grid-cols-2 gap-4">
+                    ${state.courses.map(course => `
+                        <div class="card">
+                            <div class="card-body">
+                                <h3>${course.title}</h3>
+                                <p class="text-sm text-secondary">
+                                    Instructor: ${course.instructor}
+                                </p>
+                                <div class="progress-bar mt-2">
+                                    <div class="progress-fill" 
+                                         style="width: ${course.progress}%"></div>
+                                </div>
+                                <div class="flex justify-between mt-4">
+                                    <button class="btn btn-primary" 
+                                            onclick="continueCourse(${course.id})">
+                                        Continue
+                                    </button>
+                                    <button class="btn btn-outline"
+                                            onclick="viewCourseDetails(${course.id})">
+                                        Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            showModal('All Courses', content);
+        }
+
+        function continueCourse(courseId) {
+            const course = state.courses.find(c => c.id === courseId);
+            const content = `
+                <div class="course-player">
+                    <div class="video-container mb-4" style="aspect-ratio: 16/9; background: #000;">
+                        <!-- Video player will be here -->
+                    </div>
+                    <h3>${course.title}</h3>
+                    <p>Current Progress: ${course.progress}%</p>
+                    <div class="controls mt-4">
+                        <button class="btn btn-primary" onclick="playLesson()">
+                            <i class="fas fa-play"></i> Start Lesson
+                        </button>
+                        <button class="btn btn-outline" onclick="downloadMaterials()">
+                            <i class="fas fa-download"></i> Materials
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal('Continue Course', content);
+        }
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+
+            // Initialize UI components
+            updateActiveCourses();
+            updateDeadlines();
+            updateSchedule();
+            updateActivities();
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Close modal when clicking outside
+            document.getElementById('modal-overlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('modal-overlay')) {
+                    closeModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeAllPopups();
+                }
+            });
+        }
+
+        // UI Update Functions
+        function updateActiveCourses() {
+            const coursesList = document.getElementById('active-courses-list');
+            coursesList.innerHTML = state.courses.map(course => `
+                <div class="list-item">
+                    <div>
+                        <h3>${course.title}</h3>
+                        <p class="text-sm text-secondary">
+                            Last accessed: ${course.lastAccessed}
+                        </p>
+                    </div>
+                    <button class="btn btn-primary" 
+                            onclick="continueCourse(${course.id})">
+                        Continue
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateDeadlines() {
+            const deadlinesList = document.getElementById('deadlines-list');
+            deadlinesList.innerHTML = state.assignments.map(assignment => `
+                <div class="list-item">
+                    <div>
+                        <h3>${assignment.title}</h3>
+                        <p class="text-sm text-secondary">
+                            Due: ${assignment.dueDate}
+                        </p>
+                    </div>
+                    <span class="badge badge-${
+                        assignment.status === 'pending' ? 'error' : 
+                        assignment.status === 'in-progress' ? 'warning' : 
+                        'success'
+                    }">${assignment.status}</span>
+                </div>
+            `).join('');
+        }function updateSchedule() {
+            const scheduleList = document.getElementById('schedule-list');
+            scheduleList.innerHTML = state.schedule.map(event => `
+                <div class="list-item">
+                    <div>
+                        <h3>${event.title}</h3>
+                        <p class="text-sm text-secondary">
+                            ${event.time} - ${event.duration}
+                        </p>
+                    </div>
+                    <span class="badge badge-${
+                        event.type === 'lecture' ? 'primary' : 
+                        event.type === 'lab' ? 'secondary' : 
+                        'info'
+                    }">${event.type}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateActivities() {
+            const activitiesList = document.getElementById('activities-list');
+            const activities = [
+                { title: 'Completed Math Quiz', time: '2 hours ago', type: 'quiz' },
+                { title: 'Submitted Physics Assignment', time: '4 hours ago', type: 'assignment' },
+                { title: 'Joined Study Group', time: 'Yesterday', type: 'group' }
+            ];
+
+            activitiesList.innerHTML = activities.map(activity => `
+                <div class="list-item">
+                    <div>
+                        <h3>${activity.title}</h3>
+                        <p class="text-sm text-secondary">${activity.time}</p>
+                    </div>
+                    <span class="badge badge-${
+                        activity.type === 'quiz' ? 'primary' : 
+                        activity.type === 'assignment' ? 'secondary' : 
+                        'info'
+                    }">${activity.type}</span>
+                </div>
+            `).join('');
+        }
+
+        // Notification Functions
+        function showNotifications() {
+            const content = `
+                <div class="notifications-list">
+                    ${state.notifications.map(notification => `
+                        <div class="list-item">
+                            <div>
+                                <h3>${notification.title}</h3>
+                                <p>${notification.message}</p>
+                                <p class="text-sm text-secondary">${notification.time}</p>
+                            </div>
+                            <button class="btn btn-outline btn-sm" 
+                                    onclick="markAsRead(${notification.id})">
+                                Mark as Read
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="markAllAsRead()">
+                        Mark All as Read
+                    </button>
+                    <button class="btn btn-primary" onclick="notificationSettings()">
+                        Settings
+                    </button>
+                </div>
+            `;
+            showModal('Notifications', content);
+        }
+
+        // Profile Functions
+        function showProfile() {
+            const content = `
+                <div class="profile-content">
+                    <div class="profile-header mb-4">
+                        <img src="${state.currentUser.avatar}" 
+                             alt="Profile" 
+                             class="profile-avatar">
+                        <div>
+                            <h3>${state.currentUser.name}</h3>
+                            <p class="text-secondary">${state.currentUser.email}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-control" 
+                               value="${state.currentUser.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" 
+                               value="${state.currentUser.email}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notification Preferences</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> 
+                                Course Updates
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> 
+                                Assignment Reminders
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> 
+                                Discussion Replies
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="changePassword()">
+                            Change Password
+                        </button>
+                        <button class="btn btn-primary" onclick="saveProfile()">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal('Profile Settings', content);
+        }
+
+        // Calendar Functions
+        function showCalendar() {
+            const content = `
+                <div class="calendar-wrapper">
+                    <div class="calendar-header mb-4">
+                        <button class="btn btn-outline" onclick="previousMonth()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 id="current-month">November 2024</h3>
+                        <button class="btn btn-outline" onclick="nextMonth()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-days">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <div class="calendar-events mt-4">
+                        <h4>Upcoming Events</h4>
+                        <div class="list" id="calendar-events">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="exportCalendar()">
+                            Export
+                        </button>
+                        <button class="btn btn-primary" onclick="addEvent()">
+                            Add Event
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal('Calendar', content);
+            initializeCalendar();
+        }
+
+        // Task Functions
+        function showTasks() {
+            const content = `
+                <div class="tasks-wrapper">
+                    <div class="tabs mb-4">
+                        <button class="tab active" onclick="showTaskTab('all')">All</button>
+                        <button class="tab" onclick="showTaskTab('pending')">Pending</button>
+                        <button class="tab" onclick="showTaskTab('completed')">Completed</button>
+                    </div>
+                    <div class="tasks-list" id="tasks-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="filterTasks()">
+                            Filter
+                        </button>
+                        <button class="btn btn-primary" onclick="addTask()">
+                            Add Task
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal('Tasks', content);
+            loadTasks('all');
+        }
+
+        // Study Session Functions
+        function startStudying() {
+            const content = `
+                <div class="study-session">
+                    <div class="video-container mb-4">
+                        <div class="video-player">
+                            <!-- Video player placeholder -->
+                            <div style="aspect-ratio: 16/9; background: #000; 
+                                      display: flex; align-items: center; 
+                                      justify-content: center; color: white;">
+                                Video Player
+                            </div>
+                        </div>
+                    </div>
+                    <div class="study-controls">
+                        <div class="progress-bar mb-2">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                        <div class="controls-buttons">
+                            <button class="btn btn-outline" onclick="previousSection()">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button class="btn btn-primary" onclick="togglePlayPause()">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="btn btn-outline" onclick="nextSection()">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                            <button class="btn btn-outline" onclick="toggleFullscreen()">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="study-materials mt-4">
+                        <h4>Study Materials</h4>
+                        <div class="list">
+                            <div class="list-item">
+                                <span>Lecture Notes</span>
+                                <button class="btn btn-outline btn-sm" 
+                                        onclick="downloadMaterial('notes')">
+                                    Download
+                                </button>
+                            </div>
+                            <div class="list-item">
+                                <span>Practice Problems</span>
+                                <button class="btn btn-outline btn-sm" 
+                                        onclick="downloadMaterial('problems')">
+                                    Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal('Study Session', content);
+        }
+
+        // Utility Functions
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatTime(time) {
+            return new Date(`2000/01/01 ${time}`).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp();
+        });
+
+    </script>
+</body>
+</html>
